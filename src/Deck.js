@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
-import {View, Animated, PanResponder} from 'react-native'
+import {View, Animated, PanResponder, Dimensions} from 'react-native'
+
+const SCREEN_WIDTH = Dimensions.get('window').width
 
 class Deck extends Component{
 
@@ -19,12 +21,28 @@ class Deck extends Component{
         this.state = {panResponder, position}
     }
 
+    getCardStyle(){
+
+        const {position} = this.state
+
+        const rotate = position.x.interpolate({
+            inputRange: [-SCREEN_WIDTH*2.0,0,SCREEN_WIDTH*2.0],
+            outputRange: ['-120deg', '0deg', '120deg']
+        })
+
+        return {
+            ...position.getLayout(), 
+            transform: [{rotate}]
+            }
+    }
+
     renderCards(){
         return this.props.data.map((item,index)=>{
             if(index == 0){
                 return(
-                    <Animated.View 
-            style = {this.state.position.getLayout()}
+            <Animated.View 
+            key = {item.id}
+            style = {this.getCardStyle()}
             {...this.state.panResponder.panHandlers}
             >
             {this.props.renderCard(item)}
